@@ -24,8 +24,16 @@ class ViewPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("BMI Result"),
-        backgroundColor: Colors.blue[600],
+        title: Text("BMI Result" ,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.indigo, Colors.deepPurpleAccent], // Modern gradient
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       backgroundColor: Colors.grey[200],
       body: Center(
