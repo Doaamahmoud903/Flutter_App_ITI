@@ -1,5 +1,7 @@
 import 'package:first_app_filter/bmi_home.dart';
 import 'package:first_app_filter/bmi_view.dart';
+import 'package:first_app_filter/login_screen.dart';
+import 'package:first_app_filter/products_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:first_app_filter/messanger_screen.dart';
 void main() {
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       debugShowCheckedModeBanner: false,
-      home: BmiHomePage(),
+      home: ProductsScreen(),
     );
   }
 }
