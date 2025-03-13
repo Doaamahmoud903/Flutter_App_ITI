@@ -35,9 +35,17 @@ class _HomePageState extends State<BmiHomePage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text("BMI Calculator"),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.indigo, Colors.indigoAccent], // Modern gradient
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: Text("BMI Calculator" ,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
         centerTitle: true,
-        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -86,7 +94,7 @@ class _HomePageState extends State<BmiHomePage> {
               child: ElevatedButton(
                 onPressed: navigateToResult,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.indigo,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -111,7 +119,7 @@ class _HomePageState extends State<BmiHomePage> {
         duration: Duration(milliseconds: 300),
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: selected ? Colors.blueAccent : Colors.white,
+          color: selected ? Colors.indigoAccent : Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
