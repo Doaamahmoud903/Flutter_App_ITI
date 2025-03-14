@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:first_app_filter/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -8,42 +10,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>(); // Form key to track validation
-  bool isVisible = false;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  // Email Validator
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Email is required";
-    }
-    final emailRegex = RegExp(
-      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-    );
-    if (!emailRegex.hasMatch(value)) {
-      return "Enter a valid email";
-    }
-    return null;
-  }
-
-  // Password Validator
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Password is required";
-    }
-    if (value.length < 6) {
-      return "Password must be at least 6 characters";
-    }
-    return null;
-  }
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var formKey = GlobalKey<FormState>();
+  bool isVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.indigo, Colors.deepPurpleAccent], // Modern gradient
+              colors: [Color(0xff367849), Color(0xff2E6A4A)], // Green gradient
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -81,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Padding(
               padding: const EdgeInsets.all(25),
               child: Form(
-                key: _formKey, // Assign form key
+                key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,30 +61,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurpleAccent,
+                        color: Color(0xff367849),
                       ),
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
-                      keyboardType: TextInputType.emailAddress,
                       controller: emailController,
+                      validator: (value) {
+                        bool validateEmail = RegExp(
+                          '^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]',
+                        ).hasMatch(value!);
+                        if (value.isEmpty)
+                          return "Email must not be empty";
+                        else if (!validateEmail)
+                          return "Invalid Email";
+                        return null;
+                      },
                       decoration: InputDecoration(
                         labelText: "Email",
-                        prefixIcon: const Icon(Icons.email, color: Colors.deepPurpleAccent),
+                        prefixIcon: const Icon(Icons.email, color: Color(0xff367849)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      validator: validateEmail,
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      obscureText: !isVisible,
-                      keyboardType: TextInputType.visiblePassword,
                       controller: passwordController,
+                      validator: (value) {
+                        if (value!.isEmpty) return "Password must not be empty";
+                        return null;
+                      },
+                      obscureText: !isVisible,
                       decoration: InputDecoration(
                         labelText: "Password",
-                        prefixIcon: const Icon(Icons.lock, color: Colors.deepPurpleAccent),
+                        prefixIcon: const Icon(Icons.lock, color: Color(0xff367849)),
                         suffixIcon: IconButton(
                           onPressed: () {
                             setState(() {
@@ -123,30 +104,42 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           icon: Icon(
                             isVisible ? Icons.visibility : Icons.visibility_off,
-                            color: Colors.deepPurpleAccent,
+                            color: Color(0xff367849),
                           ),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      validator: validatePassword,
                     ),
                     const SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurpleAccent,
+                          backgroundColor: Color(0xff367849),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            print("Email: ${emailController.text}");
-                            print("Password: ${passwordController.text}");
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+                            try {
+                              await FirebaseAuth.instance.signInWithEmailAndPassword(
+                                email: emailController.text,
+                                password: passwordController.text,
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Login Successful")),
+                              );
+                              formKey.currentState!.reset();
+                            } catch (e) {
+                              print("Error: $e");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Error: ${e.toString()}")),
+                              );
+                            }
                           }
                         },
                         child: const Text(
@@ -162,11 +155,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           const Text("Don't have an account?"),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RegisterScreen(),
+                                ),
+                              );
+                            },
                             child: const Text(
-                              "Register Now",
+                              "Sign Up",
                               style: TextStyle(
-                                color: Colors.indigo,
+                                color: Color(0xff367849),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
